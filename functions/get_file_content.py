@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from config import MAX_ALLOWED_SIZE
 
 
 def get_file_content(working_directory, file_path):
@@ -19,6 +20,12 @@ def get_file_content(working_directory, file_path):
         if not f.is_file():
             return f'Error: File not found or is not a regular file: "{file_path}"'
 
-        return target_file_path
+        file_content = ""
+        with open(target_file_path, "r") as f:
+            file_content = f.read(MAX_ALLOWED_SIZE)
+            if f.read(1):
+                file_content += f'[...File "{target_file_path}" truncated at {MAX_ALLOWED_SIZE} characters]'
+
+        return file_content
     except Exception as e:
         return f"Error: {e}"
