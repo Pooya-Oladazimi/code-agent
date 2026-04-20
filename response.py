@@ -7,7 +7,11 @@ def render_response(response, user_prompt, verbose=False):
                 usage["prompt_token_count"], usage["candidates_token_count"]
             )
         )
-    print("Response: \n{}".format(response.text))
+    if response.function_calls:
+        for f in response.function_calls:
+            print(f"Calling function: {f.name}({f.args})")
+    else:
+        print("Response: \n{}".format(response.text))
 
 
 def extract_usage_metadata(response):

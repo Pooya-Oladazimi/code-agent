@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 from response import render_response
 from prompts import system_prompt
+from available_functions import available_functions
 
 
 load_dotenv()
@@ -23,7 +24,9 @@ messages = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
 response = gemini_client.models.generate_content(
     model="gemini-2.5-flash",
     contents=messages,
-    config=types.GenerateContentConfig(system_instruction=system_prompt, temperature=0),
+    config=types.GenerateContentConfig(
+        system_instruction=system_prompt, temperature=0, tools=[available_functions]
+    ),
 )
 
 render_response(response, user_prompt, args.verbose)
