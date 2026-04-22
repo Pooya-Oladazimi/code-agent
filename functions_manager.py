@@ -20,15 +20,15 @@ def call_function(function_call, verbose=False):
     else:
         print(f" - Calling function: {function_call.name}")
 
-    function_map = {
-        "get_file_content": get_file_content,
+    functions_map = {
         "get_files_info": get_files_info,
+        "get_file_content": get_file_content,
         "write_file": write_file,
         "run_python_file": run_python_file,
     }
 
     function_name = function_call.name or ""
-    if not function_name:
+    if functions_map.get(function_name, None):
         return types.Content(
             role="tool",
             parts=[
@@ -38,9 +38,10 @@ def call_function(function_call, verbose=False):
                 )
             ],
         )
+
     args = dict(function_call.args) if function_call.args else {}
-    working_directory = "./calculator"
-    function_result = function_map[function_name](working_directory, **args)
+    working_dir = "./calculator"
+    function_result = functions_map[function_name](working_dir, **args)
     return types.Content(
         role="tool",
         parts=[

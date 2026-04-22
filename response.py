@@ -1,3 +1,6 @@
+from available_functions import call_function
+
+
 def render_response(response, user_prompt, verbose=False):
     if verbose:
         usage = extract_usage_metadata(response)
@@ -7,9 +10,20 @@ def render_response(response, user_prompt, verbose=False):
                 usage["prompt_token_count"], usage["candidates_token_count"]
             )
         )
+    results = []
     if response.function_calls:
-        for f in response.function_calls:
-            print(f"Calling function: {f.name}({f.args})")
+        for func in response.function_calls:
+            f = call_function(func, verbose)
+            if len(f.parts) == 0:
+                raise Exception(f"function {f.name} parts is empty")
+            if not f.parts[0].function_response:
+                raise Exception(f"function {f.name} resp is none")
+            if not f.parts[0].function_response.response:
+                raise Exception(f"function {f.name} resp.resp is none")
+            results.append(f.parts[0])
+            if verbose:
+                print(f"-> {f.parts[0].function_response.response}")
+
     else:
         print("Response: \n{}".format(response.text))
 
